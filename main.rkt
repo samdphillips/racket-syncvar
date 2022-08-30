@@ -9,7 +9,8 @@
          (contract-out
           [ivar-put!    (-> ivar? any/c any)]
           [ivar-get-evt (-> ivar? any)]
-          [ivar-get     (-> ivar? any)]))
+          [ivar-get     (-> ivar? any)]
+          [ivar-try-get (-> ivar? any)]))
 
 (struct exn:fail:ivar exn:fail ())
 
@@ -38,3 +39,6 @@
 
 (define (ivar-get an-ivar)
   (sync an-ivar))
+
+(define (ivar-try-get an-ivar)
+  (sync/timeout 0 an-ivar))

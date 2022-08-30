@@ -53,10 +53,12 @@
     (void (thread (producer 'a 'p1)))
     (void (thread (producer 'b 'p2)))
     (sleep 3)
+    (check-false (ivar-try-get iv) "ivar-try-get should be #f before producers run")
     (semaphore-post s)
     (sleep 1)
     (log-consumer-warning "done")
     (log-producer-warning "done")
+    (check-match (ivar-try-get iv) (or 'p1 'p2))
     (define consumer-trace (force consumer-tracer))
     (define producer-trace (force producer-tracer))
 
