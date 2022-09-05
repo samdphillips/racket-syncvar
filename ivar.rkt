@@ -8,9 +8,12 @@
          make-ivar
          (contract-out
           [ivar-put!    (-> ivar? any/c any)]
-          [ivar-get-evt (-> ivar? any)]
+          [ivar-get-evt (-> ivar? evt?)]
           [ivar-get     (-> ivar? any)]
           [ivar-try-get (-> ivar? any)]))
+
+(struct empty-type ())
+(define empty (empty-type))
 
 (struct exn:fail:ivar exn:fail ())
 
@@ -23,16 +26,15 @@
   #:property prop:evt ivar-get-evt)
 
 (define (make-ivar)
-  (define signal (make-semaphore))
-  (ivar (box signal) signal))
+  (ivar (box empty) (make-semaphore)))
 
 (define (ivar-put! an-ivar value)
   (match-define (ivar value-box signal) an-ivar)
-  (let loop ()
+  (let retry ()
     (cond
-      [(box-cas! value-box signal value) (semaphore-post signal)]
+      [(box-cas! value-box empty value) (semaphore-post signal)]
       ;; spurious failure of cas
-      [(eq? signal (unbox value-box)) (loop)]
+      [(eq? empty (unbox value-box)) (retry)]
       [else
        (raise (exn:fail:ivar "ivar-put!: ivar has already been assigned"
                              (current-continuation-marks)))])))
