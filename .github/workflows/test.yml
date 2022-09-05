@@ -20,7 +20,7 @@ jobs:
         variant: ${{ matrix.racket-variant }}
         version: ${{ matrix.racket-version }}
     - name: install base package
-      run: raco pkg install --name syncvar --batch --auto .
+      run: raco pkg install --name syncvar --batch --auto
     - name: check declared dependencies
       run: raco setup --check-pkg-deps --unused-pkg-deps --pkgs syncvar
     - name: run base tests
