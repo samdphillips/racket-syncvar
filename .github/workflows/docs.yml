@@ -19,7 +19,7 @@ jobs:
         variant: 'CS'
         version: 'stable'
     - name: install base package
-      run: raco pkg install --name syncvar --batch --auto .
+      run: raco pkg install --name syncvar --batch --auto
     - name: build docs
       run: scribble +m --redirect-main http://pkg-build.racket-lang.org/doc/ --htmls --dest ./docs ./scribblings/syncvar.scrbl
     - name: push to gh-pages
