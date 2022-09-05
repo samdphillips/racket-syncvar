@@ -1,0 +1,27 @@
+on:
+  pull_request:
+  schedule:
+  - cron: "17 16 * * THU"
+jobs:
+  test:
+    strategy:
+      matrix:
+        racket-variant: ["BC", "CS"]
+        racket-version: ["8.4", "8.5", "pre-release", "stable", "current"]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@master
+    - name: install racket
+      uses: Bogdanp/setup-racket@v1.8.1
+      with:
+        architecture: 'x64'
+        distribution: 'full'
+        variant: ${{ matrix.racket-variant }}
+        version: ${{ matrix.racket-version }}
+    - name: install base package
+      run: raco pkg install --name syncvar --batch --auto .
+    - name: check declared dependencies
+      run: raco setup --check-pkg-deps --unused-pkg-deps --pkgs syncvar
+    - name: run base tests
+      run: raco test --drdr --package syncvar
