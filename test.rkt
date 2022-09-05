@@ -5,15 +5,18 @@
            racket/promise
            rackunit
            syncvar)
-  
+
   (define (end-trace? m)
-    (match m [(vector 'warning _ ...) #t] [_ #f]))
+    (match m
+      [(vector 'warning (pregexp #px"^.*: done$") _ ...) #t]
+      [_ #f]))
 
   (define (make-tracer logger)
     (delay/thread
       (define trace-rcvr (make-log-receiver logger 'info))
       (let loop ([msgs null])
         (define msg (sync trace-rcvr))
+        (displayln msg)
         (cond
           [(end-trace? msg) (reverse msgs)]
           [else
@@ -24,21 +27,20 @@
     (define-logger producer)
     (define consumer-tracer (make-tracer consumer-logger))
     (define producer-tracer (make-tracer producer-logger))
-  
+
     (define iv (make-ivar))
     (define s (make-semaphore))
-  
+
     (define (producer i v)
       (lambda ()
         (log-producer-debug "~a waiting" i)
         (sync (semaphore-peek-evt s))
         (with-handlers ([exn:fail:ivar?
                         (lambda (e)
-                          (log-producer-error "~a ivar errored" i)
-                          (raise e))])
+                          (log-producer-warning "~a ivar errored" i))])
           (log-producer-info "~a putting" i)
           (ivar-put! iv v))))
-  
+
     (define (consumer i p)
       (lambda ()
         (log-consumer-debug "~a sleeping ~a" i p)
@@ -46,10 +48,10 @@
         (log-consumer-debug "~a waiting" i)
         (define v (ivar-get iv))
         (log-consumer-info "~a got ~a" i v)))
-  
+
     (void (thread (consumer 'c 1)))
     (void (thread (consumer 'd 2)))
-  
+
     (void (thread (producer 'a 'p1)))
     (void (thread (producer 'b 'p2)))
     (sleep 3)
@@ -63,7 +65,7 @@
     (define producer-trace (force producer-tracer))
 
     (match consumer-trace
-      [(list _ ... 
+      [(list _ ...
              (vector 'info (regexp #px"(\\w+) got (\\w+)" (list _ c1 v1)) _ ...)
              (vector 'info (regexp #px"(\\w+) got (\\w+)" (list _ c2 v2)) _ ...)
              _ ...)
