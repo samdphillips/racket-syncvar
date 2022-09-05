@@ -6,3 +6,4 @@
 (define deps '("base"))
 (define build-deps '("rackunit-lib"))
 (define pkg-authors '(samdphillips@gmail.com))
+(define scribblings '(["scribblings/syncvar.scrbl" ()]))
