@@ -1,1 +1,3 @@
-compiled/*
+.*.swp
+**/compiled/*
+doc/
