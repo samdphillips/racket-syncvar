@@ -1,3 +1,5 @@
 .*.swp
 **/compiled/*
+coverage/
 doc/
+
