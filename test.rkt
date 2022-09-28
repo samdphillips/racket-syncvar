@@ -16,7 +16,6 @@
       (define trace-rcvr (make-log-receiver logger 'info))
       (let loop ([msgs null])
         (define msg (sync trace-rcvr))
-        (displayln msg)
         (cond
           [(end-trace? msg) (reverse msgs)]
           [else
@@ -71,4 +70,38 @@
              _ ...)
        (check-not-equal? c1 c2 "both consumers reporting once")
        (check-equal? v1 v2 "both consumers receiving the same value")]
-      [_ (fail "no consumer recieves found")])))
+      [_ (fail "no consumer recieves found")]))
+      
+  (test-case "mvar tests"
+    ;; These generally test the *-evt values/functions since they can easily be
+    ;; used with a timeout if they have a deadlock, and the non evt versions are
+    ;; trivial.
+    (test-case "mvar-try-get empty"
+      (define mv (make-mvar))
+      (check-false (mvar-try-get mv)))
+
+    (test-case "mvar-try-get full"
+      (define mv (make-mvar #t))
+      (check-true (mvar-try-get mv)))
+
+    (test-case "mvar-put! / mvar-take!"
+      (define mv (make-mvar))
+      (mvar-put! mv 42)
+      (check-equal? (sync/timeout #f (mvar-take!-evt mv)) 42)
+      (check-false (mvar-try-get mv)))
+  
+    (test-case "mvar-put! full"
+      (define mv (make-mvar 42))
+      (check-exn exn:fail:mvar? (λ () (mvar-put! mv 43))))
+     
+    (test-case "mvar-swap!"
+      (define mv (make-mvar 42))
+      (check-not-false (sync/timeout 0 (mvar-swap!-evt mv 101)))
+      (check-equal? (mvar-try-get mv) 101))
+
+    (test-case "mvar-update!-evt"
+      (define mv (make-mvar 42))
+      (check-not-false (sync/timeout 0 (mvar-update!-evt mv add1)))
+      (check-equal? (mvar-try-get mv) 43))
+  
+  ))
