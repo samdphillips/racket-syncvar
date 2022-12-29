@@ -7,3 +7,4 @@
 (define build-deps '("racket-doc" "scribble-lib"))
 (define pkg-authors '(samdphillips@gmail.com))
 (define scribblings '(["scribblings/syncvar.scrbl" ()]))
+(define license 'Apache-2.0)
