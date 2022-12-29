@@ -64,11 +64,13 @@ as the @racket[ivar-get] result.
 }
 
 @defproc[(ivar-get [an-ivar ivar?]) any]{
-XXX
+   Waits until @racket[an-ivar] is in the full state and retrieves the stored
+   value.
 }
 
 @defproc[(ivar-try-get [an-ivar ivar?]) any]{
-XXX
+   If @racket[an-ivar] is in the full state return the stored value, otherwise
+   returns @racket[#f].
 }
 
 @defevtproc[(ivar-get-evt [an-ivar ivar?])
