@@ -21,8 +21,8 @@
 @(define-syntax-rule (defevtproc prototype (ready ...) (result ...) pre-flow ...)
   @defproc[prototype evt?]{
     Returns a fresh @techref{synchronizable event} for use with @racket[sync]. The
-    event is @techref{ready for synchronization} when @splice[@list[ready ...]],
-    and the event’s @techref{synchronization result} is @splice[@list[result ...]].
+    event is @techref{ready for synchronization} when @splice[@list[ready ...]];
+    the event’s @techref{synchronization result} is @splice[@list[result ...]].
 
     @splice[(list pre-flow ...)]})
 
@@ -41,7 +41,7 @@ exception.
 @subsection{IVars}
 @defmodule[syncvar/ivar]
 
-An @deftech{ivar} is a write once synchronous variables.  Once an ivar is in the
+An @deftech{ivar} is a write once synchronous variable.  Once an ivar is in the
 full state it cannot go back to the empty state.
 
 In addition to its use with ivar-specific procedures, an ivar can be used as a
@@ -134,23 +134,28 @@ A @deftech{mvar} is a mutable synchronous variable.
 }
 
 @defevtproc[(mvar-take!-evt [a-mvar mvar?])
-            @{@racket[a-mvar] is in the full state and then removes the value}
-            @{the value removed from @racket[a-mvar]}]
+            @{@racket[a-mvar] is in the full state}
+            @{the value removed from @racket[a-mvar]}]{
+   When this event is ready the stored value will be removed.
+}
 
 @defevtproc[(mvar-get-evt [a-mvar mvar?])
             @{@racket[a-mvar] is in the full state}
             @{the value stored in @racket[a-mvar]}]
 
 @defevtproc[(mvar-swap!-evt [a-mvar mvar?] [v any/c])
-            @{@racket[a-mvar] is in the full state and the value stored is
-              replaced with @racket[v]}
-            @{the old value stored in @racket[a-mvar]}]
+            @{@racket[a-mvar] is in the full state}
+            @{the old value stored in @racket[a-mvar]}]{
+   When this event is ready the value stored in @racket[a-mvar] will be replaced
+   with the value @racket[v].
+}
 
 @defevtproc[(mvar-update!-evt [a-mvar mvar?] [f (-> any/c any)])
-            @{@racket[a-mvar] is in the full state and the value stored is
-              replaced with a new value derived from applying @racket[f] to the
-              old value}
-            @{the old values stored in @racket[a-mvar]}]
+            @{@racket[a-mvar] is in the full state}
+            @{the old values stored in @racket[a-mvar]}]{
+   When this event is ready the value store in @racket[a-mvar] will be replaced
+   with a the value returned from applying @racket[f] to the old value.
+}
 
 @defproc[(exn:fail:mvar? [v any/c]) boolean?]{
    A predicate for recognizing exceptions raised when a program attempts to
