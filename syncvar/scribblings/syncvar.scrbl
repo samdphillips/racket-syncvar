@@ -134,23 +134,28 @@ A @deftech{mvar} is a mutable synchronous variable.
 }
 
 @defevtproc[(mvar-take!-evt [a-mvar mvar?])
-            @{@racket[a-mvar] is in the full state and then removes the value}
-            @{the value removed from @racket[a-mvar]}]
+            @{@racket[a-mvar] is in the full state}
+            @{the value removed from @racket[a-mvar]}]{
+   When this event is ready the stored value will be removed.
+}
 
 @defevtproc[(mvar-get-evt [a-mvar mvar?])
             @{@racket[a-mvar] is in the full state}
             @{the value stored in @racket[a-mvar]}]
 
 @defevtproc[(mvar-swap!-evt [a-mvar mvar?] [v any/c])
-            @{@racket[a-mvar] is in the full state and the value stored is
-              replaced with @racket[v]}
-            @{the old value stored in @racket[a-mvar]}]
+            @{@racket[a-mvar] is in the full state}
+            @{the old value stored in @racket[a-mvar]}]{
+   When this event is ready the value stored in @racket[a-mvar] will be replaced
+   with the value @racket[v].
+}
 
 @defevtproc[(mvar-update!-evt [a-mvar mvar?] [f (-> any/c any)])
-            @{@racket[a-mvar] is in the full state and the value stored is
-              replaced with a new value derived from applying @racket[f] to the
-              old value}
-            @{the old values stored in @racket[a-mvar]}]
+            @{@racket[a-mvar] is in the full state}
+            @{the old values stored in @racket[a-mvar]}]{
+   When this event is ready the value store in @racket[a-mvar] will be replaced
+   with a the value returned from applying @racket[f] to the old value.
+}
 
 @defproc[(exn:fail:mvar? [v any/c]) boolean?]{
    A predicate for recognizing exceptions raised when a program attempts to
