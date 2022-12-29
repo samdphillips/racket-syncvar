@@ -1,7 +1,5 @@
 # syncvar: a library of synchronous variables
 
-Sam Phillips
-
 The `syncvar` library is a library to access synchronous variables
 inspired by [CML](http://cml.cs.uchicago.edu/pages/sync-var.html).
 
