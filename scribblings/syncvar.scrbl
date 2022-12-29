@@ -1,6 +1,7 @@
 #lang scribble/manual
 
 @(require
+   scribble/decode
    (for-label racket
               syncvar
               syncvar/ivar
@@ -11,8 +12,19 @@
 
 @(when (equal? ".github/workflows/docs.yml" (getenv "GITHUB_WORKFLOW"))
    @para{@bold{WARNING!}  This documentation is for the development version of
-         @racket[keyring].  Release documentation is at
+         @racket[syncvar].  Release documentation is at
          @(let ([x "https://docs.racket-lang.org/syncvar/index.html"]) (link x x)).})
+
+@(define-syntax-rule (techref pre-flow ...)
+  (tech #:doc '(lib "scribblings/reference/reference.scrbl") pre-flow ...))
+
+@(define-syntax-rule (defevtproc prototype (ready ...) (result ...) pre-flow ...)
+  @defproc[prototype evt?]{
+    Returns a fresh @techref{synchronizable event} for use with @racket[sync]. The
+    event is @techref{ready for synchronization} when @splice[@list[ready ...]],
+    and the event’s @techref{synchronization result} is @splice[@list[result ...]].
+
+    @splice[(list pre-flow ...)]})
 
 The @racket[syncvar] library is a library to access synchronous variables
 inspired by @link["http://cml.cs.uchicago.edu/pages/sync-var.html"]{CML}.
@@ -33,9 +45,9 @@ An @deftech{ivar} is a write once synchronous variables.  Once an ivar is in the
 full state it cannot go back to the empty state.
 
 In addition to its use with ivar-specific procedures, an ivar can be used as a
-@tech[#:doc '(lib "scribblings/reference/reference.scrbl")]{synchronizable event}.
-An ivar is ready for synchronization when @racket[ivar-get] would not block; the
-synchronization result is the same as the @racket[ivar-get] result.
+@techref{synchronizable event}.  An ivar is @techref{ready for synchronization}
+when @racket[ivar-get] would not block; the synchronization result is the same
+as the @racket[ivar-get] result.
 
 @defproc[(ivar? [v any/c]) boolean?]{
    Returns @racket[#t] if @racket[v] is a @tech{ivar}, @racket[#f] otherwise.
@@ -45,15 +57,24 @@ synchronization result is the same as the @racket[ivar-get] result.
    Creates an ivar in the empty state.
 }
 
-@defproc[(ivar-put!    [an-ivar ivar?] [v any/c]) any]{
+@defproc[(ivar-put! [an-ivar ivar?] [v any/c]) any]{
    Transitions @racket[an-ivar] from the empty state to the full state, storing
    @racket[v] in it and unblocking any threads waiting to read it.  If
    @racket[an-ivar] is already in the full state raises an exception.
 }
 
-@defproc[(ivar-get     [an-ivar ivar?]) any]
-@defproc[(ivar-try-get [an-ivar ivar?]) any]
-@defproc[(ivar-get-evt [an-ivar ivar?]) evt?]
+@defproc[(ivar-get [an-ivar ivar?]) any]{
+XXX
+}
+
+@defproc[(ivar-try-get [an-ivar ivar?]) any]{
+XXX
+}
+
+@defevtproc[(ivar-get-evt [an-ivar ivar?])
+            @{@racket[an-ivar] is in the full state}
+            @{the value stored in @racket[an-ivar]}]
+
 @defproc[(exn:fail:ivar? [v any/c]) boolean?]{
    A predicate for recognizing exceptions raised when a thread attempts to
    @racket[ivar-put!] a full ivar.
@@ -90,7 +111,8 @@ A @deftech{mvar} is a mutable synchronous variable.
 }
 
 @defproc[(mvar-get [a-mvar mvar?]) any]{
-   Waits until @racket[a-mvar] is in the full state and returns the stored value.
+   Waits until @racket[a-mvar] is in the full state and returns the stored
+   value.
 }
 
 @defproc[(mvar-try-get [a-mvar mvar?]) any]{
@@ -98,14 +120,37 @@ A @deftech{mvar} is a mutable synchronous variable.
    returns @racket[#f].
 }
 
-@defproc[(mvar-swap!       [a-mvar mvar?] [v any/c]) any]
-@defproc[(mvar-update!     [a-mvar mvar?] [f (-> any/c any)]) any]
-@defproc[(mvar-take!-evt   [a-mvar mvar?]) evt?]
-@defproc[(mvar-get-evt     [a-mvar mvar?]) evt?]
-@defproc[(mvar-swap!-evt   [a-mvar mvar?]) evt?]
-@defproc[(mvar-update!-evt [a-mvar mvar?] [f (-> any/c any)]) evt?]
+@defproc[(mvar-swap! [a-mvar mvar?] [v any/c]) any]{
+   Waits until @racket[a-mvar] is in the full state and replaces the stored
+   value with @racket[v].  Returns the old value stored in @racket[a-mvar].
+}
+
+@defproc[(mvar-update! [a-mvar mvar?] [f (-> any/c any)]) any]{
+   Waits until @racket[a-mvar] is in the full state and replaces the stored
+   value with the result of @racket[(f old-value)].  Returns the old value
+   stored in @racket[a-mvar].
+}
+
+@defevtproc[(mvar-take!-evt [a-mvar mvar?])
+            @{@racket[a-mvar] is in the full state and then removes the value}
+            @{the value removed from @racket[a-mvar]}]
+
+@defevtproc[(mvar-get-evt [a-mvar mvar?])
+            @{@racket[a-mvar] is in the full state}
+            @{the value stored in @racket[a-mvar]}]
+
+@defevtproc[(mvar-swap!-evt [a-mvar mvar?] [v any/c])
+            @{@racket[a-mvar] is in the full state and the value stored is
+              replaced with @racket[v]}
+            @{the old value stored in @racket[a-mvar]}]
+
+@defevtproc[(mvar-update!-evt [a-mvar mvar?] [f (-> any/c any)])
+            @{@racket[a-mvar] is in the full state and the value stored is
+              replaced with a new value derived from applying @racket[f] to the
+              old value}
+            @{the old values stored in @racket[a-mvar]}]
 
 @defproc[(exn:fail:mvar? [v any/c]) boolean?]{
-   A predicate for recognizing exceptions raised when a thread attempts to
+   A predicate for recognizing exceptions raised when a program attempts to
    @racket[mvar-put!] a full mvar.
 }
