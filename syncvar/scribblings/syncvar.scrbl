@@ -21,8 +21,8 @@
 @(define-syntax-rule (defevtproc prototype (ready ...) (result ...) pre-flow ...)
   @defproc[prototype evt?]{
     Returns a fresh @techref{synchronizable event} for use with @racket[sync]. The
-    event is @techref{ready for synchronization} when @splice[@list[ready ...]],
-    and the event’s @techref{synchronization result} is @splice[@list[result ...]].
+    event is @techref{ready for synchronization} when @splice[@list[ready ...]];
+    the event’s @techref{synchronization result} is @splice[@list[result ...]].
 
     @splice[(list pre-flow ...)]})
 
@@ -41,7 +41,7 @@ exception.
 @subsection{IVars}
 @defmodule[syncvar/ivar]
 
-An @deftech{ivar} is a write once synchronous variables.  Once an ivar is in the
+An @deftech{ivar} is a write once synchronous variable.  Once an ivar is in the
 full state it cannot go back to the empty state.
 
 In addition to its use with ivar-specific procedures, an ivar can be used as a
