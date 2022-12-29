@@ -4,7 +4,7 @@ The `syncvar` library is a library to access synchronous variables
 inspired by [CML](http://cml.cs.uchicago.edu/pages/sync-var.html).
 
 This library primarily provides [Id
-style](https://en.wikipedia.org/wiki/Id_&programming_language))
+style](https://en.wikipedia.org/wiki/Id_(programming_language))
 synchronous variables.  These variables have two states: empty and full.  When a
 thread attempts to read a variable that is empty the thread will block until it
 is full.  Any attempt to write a value to a full variable will raise an
