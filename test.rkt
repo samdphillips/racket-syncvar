@@ -102,6 +102,4 @@
     (test-case "mvar-update!-evt"
       (define mv (make-mvar 42))
       (check-not-false (sync/timeout 0 (mvar-update!-evt mv add1)))
-      (check-equal? (mvar-try-get mv) 43))
-  
-  ))
+      (check-equal? (mvar-try-get mv) 43))))
