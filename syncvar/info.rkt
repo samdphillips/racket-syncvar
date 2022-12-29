@@ -4,6 +4,7 @@
 (define collection "syncvar")
 (define version "0.0.1")
 (define deps '("base" "syncvar-lib"))
+(define implies '("syncvar-lib"))
 (define build-deps '("racket-doc" "scribble-lib"))
 (define pkg-authors '(samdphillips@gmail.com))
 (define scribblings '(["scribblings/syncvar.scrbl" ()]))
