@@ -161,3 +161,5 @@ A @deftech{mvar} is a mutable synchronous variable.
    A predicate for recognizing exceptions raised when a program attempts to
    @racket[mvar-put!] a full mvar.
 }
+
+@include-section["changelog.scrbl"]
