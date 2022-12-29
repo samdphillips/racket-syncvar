@@ -33,7 +33,7 @@ inspired by @link["http://cml.cs.uchicago.edu/pages/sync-var.html"]{CML}.
 @defmodule[syncvar]
 
 This library primarily provides @link["https://en.wikipedia.org/wiki/Id_(programming_language)"]{Id style}
-synchronous variable.  These variables have two states: empty and full.  When a
+synchronous variables.  These variables have two states: empty and full.  When a
 thread attempts to read a variable that is empty the thread will block until it
 is full.  Any attempt to write a value to a full variable will raise an
 exception.
