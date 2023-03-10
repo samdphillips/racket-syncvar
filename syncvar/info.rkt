@@ -2,7 +2,7 @@
 
 (define name "syncvar")
 (define collection "syncvar")
-(define version "0.9.0")
+(define version "0.9.1")
 (define deps '("base" "syncvar-lib"))
 (define implies '("syncvar-lib"))
 (define build-deps '("racket-doc" "scribble-lib"))

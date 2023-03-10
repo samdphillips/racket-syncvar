@@ -2,7 +2,7 @@
 
 (define name "syncvar-lib")
 (define collection "syncvar")
-(define version "0.9.0")
+(define version "0.9.1")
 (define deps '("base"))
 (define build-deps '("rackunit-lib"))
 (define pkg-authors '(samdphillips@gmail.com))
