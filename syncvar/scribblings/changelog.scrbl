@@ -1,6 +1,18 @@
 #lang scribble/manual
 
+@(require
+   (for-label syncvar
+              syncvar/ivar
+              syncvar/mvar))
+
 @title{Changelog}
+
+@section{0.9.2}
+Release date: 2023/04/19
+@itemlist[
+  @item{Fixed bug in @racket[mvar-update!-evt] where the previous value was not
+        returned.}
+]
 
 @section{0.9.1}
 Release date: 2023/03/09

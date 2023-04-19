@@ -66,7 +66,8 @@
 (define (mvar-update!-evt an-mvar update-func)
   (wrap-evt (mvar-take!-evt an-mvar)
             (λ (old-value)
-              (mvar-put! an-mvar (update-func old-value)))))
+              (mvar-put! an-mvar (update-func old-value))
+              old-value)))
 
 (define (mvar-take! an-mvar)
   (sync (mvar-take!-evt an-mvar)))
