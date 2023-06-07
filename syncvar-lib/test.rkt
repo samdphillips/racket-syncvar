@@ -102,4 +102,10 @@
     (test-case "mvar-update!-evt"
       (define mv (make-mvar 42))
       (check-equal? (sync/timeout 0 (mvar-update!-evt mv add1)) 42)
-      (check-equal? (mvar-try-get mv) 43))))
+      (check-equal? (mvar-try-get mv) 43))
+
+    (test-case "mvar-update!-evt error"
+      (define mv (make-mvar 42))
+      (check-exn exn:fail?
+                 (λ () (sync/timeout 0 (mvar-update!-evt mv (λ (v) (error 'oops "oops"))))))
+      (check-equal? (mvar-try-get mv) 42))))

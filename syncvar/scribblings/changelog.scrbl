@@ -7,6 +7,13 @@
 
 @title{Changelog}
 
+@section{0.9.3}
+Release date: 2023/06/07
+@itemlist[
+  @item{Fix behavior in @racket[mvar-update!-evt] when running the update
+        function resulted in an error.}
+]
+
 @section{0.9.2}
 Release date: 2023/04/19
 @itemlist[

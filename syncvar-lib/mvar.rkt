@@ -66,8 +66,13 @@
 (define (mvar-update!-evt an-mvar update-func)
   (wrap-evt (mvar-take!-evt an-mvar)
             (λ (old-value)
-              (mvar-put! an-mvar (update-func old-value))
-              old-value)))
+              (define-values (new-value err)
+                (with-handlers ([exn:fail? (λ (err) (values old-value err))])
+                  (values (update-func old-value) #f)))
+              (mvar-put! an-mvar new-value)
+              (if err
+                  (raise err)
+                  old-value))))
 
 (define (mvar-take! an-mvar)
   (sync (mvar-take!-evt an-mvar)))

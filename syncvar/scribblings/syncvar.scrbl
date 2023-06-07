@@ -131,6 +131,11 @@ A @deftech{mvar} is a mutable synchronous variable.
    Waits until @racket[a-mvar] is in the full state and replaces the stored
    value with the result of @racket[(f old-value)].  Returns the old value
    stored in @racket[a-mvar].
+
+   If an error occurs while running @racket[f], then the original value will
+   be stored in @racket[a-mvar].
+
+   @history[#:changed "0.9.3" @elem{fixed update error behavior}]
 }
 
 @defevtproc[(mvar-take!-evt [a-mvar mvar?])
@@ -153,8 +158,13 @@ A @deftech{mvar} is a mutable synchronous variable.
 @defevtproc[(mvar-update!-evt [a-mvar mvar?] [f (-> any/c any)])
             @{@racket[a-mvar] is in the full state}
             @{the old values stored in @racket[a-mvar]}]{
-   When this event is ready the value store in @racket[a-mvar] will be replaced
+   When this event is ready the value stored in @racket[a-mvar] will be replaced
    with a the value returned from applying @racket[f] to the old value.
+
+   If an error occurs while running @racket[f], then the original value will
+   be stored in @racket[a-mvar].
+
+   @history[#:changed "0.9.3" @elem{fixed update error behavior}]
 }
 
 @defproc[(exn:fail:mvar? [v any/c]) boolean?]{
