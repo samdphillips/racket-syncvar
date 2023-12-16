@@ -12,9 +12,6 @@
           [ivar-get     (-> ivar? any)]
           [ivar-try-get (-> ivar? any)]))
 
-(struct empty-type ())
-(define empty (empty-type))
-
 (struct exn:fail:ivar exn:fail ())
 
 (define (ivar-get-evt an-ivar)
@@ -22,19 +19,21 @@
             (lambda (_ignore)
               (unbox (ivar-value-box an-ivar)))))
 
+;; an empty ivar has signal in its value-box
 (struct ivar (value-box signal)
   #:property prop:evt ivar-get-evt)
 
 (define (make-ivar)
-  (ivar (box empty) (make-semaphore)))
+  (define signal (make-semaphore))
+  (ivar (box signal) signal))
 
 (define (ivar-put! an-ivar value)
   (match-define (ivar value-box signal) an-ivar)
   (let retry ()
     (cond
-      [(box-cas! value-box empty value) (semaphore-post signal)]
+      [(box-cas! value-box signal value) (semaphore-post signal)]
       ;; spurious failure of cas
-      [(eq? empty (unbox value-box)) (retry)]
+      [(eq? signal (unbox value-box)) (retry)]
       [else
        (raise (exn:fail:ivar "ivar-put!: ivar has already been assigned"
                              (current-continuation-marks)))])))

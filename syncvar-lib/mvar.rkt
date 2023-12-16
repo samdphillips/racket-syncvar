@@ -19,24 +19,26 @@
           [mvar-swap!       (-> mvar? any/c any)]
           [mvar-update!     (-> mvar? (-> any/c any) any)]))
 
-(struct empty-type ())
-(define empty (empty-type))
-
 (struct exn:fail:mvar exn:fail ())
 
+;; an empty mvar has signal in its value-box
 (struct mvar (value-box signal))
 
-(define (make-mvar [init-value empty])
-  (mvar (box init-value)
-        (make-semaphore (if (eq? empty init-value) 0 1))))
+(define make-mvar
+  (case-lambda
+    [()
+     (define signal (make-semaphore 0))
+     (mvar (box signal) signal)]
+    [(init-value)
+     (mvar (box init-value) (make-semaphore 1))]))
 
 (define (mvar-put! an-mvar value)
   (match-define (mvar value-box signal) an-mvar)
   (let retry ()
     (cond
-      [(box-cas! value-box empty value) (semaphore-post signal)]
+      [(box-cas! value-box signal value) (semaphore-post signal)]
       ;; spurious failure of cas
-      [(eq? empty (unbox value-box)) (retry)]
+      [(eq? signal (unbox value-box)) (retry)]
       [else
        (raise (exn:fail:mvar "mvar-put!: mvar is full"
                              (current-continuation-marks)))])))
@@ -46,7 +48,7 @@
   (wrap-evt signal
             (λ (signal)
               (define value (unbox value-box))
-              (set-box! value-box empty)
+              (set-box! value-box signal)
               value)))
 
 (define (mvar-get-evt an-mvar)
@@ -91,4 +93,3 @@
 
 (define (mvar-update! an-mvar update-func)
   (sync (mvar-update!-evt an-mvar update-func)))
-
